@@ -40,61 +40,6 @@ const restaurantController = {
             next(err);
           }
     },
-    getPerformanceMetrics : async(req, res ,next)=>{
-      try {
-        const metrics = await Restaurant.aggregate([
-          {
-            $lookup: {
-              from: 'interactions',
-              localField: '_id',
-              foreignField: 'restaurantId',
-              as: 'interactions',
-            },
-          },
-          {
-            $project: {
-              name: 1,
-              status: 1,
-              address: 1,
-              lastInteractionDate: {
-                $max: {
-                  $map: {
-                    input: '$interactions',
-                    as: 'interaction',
-                    in: '$$interaction.interactionDate',
-                  },
-                },
-              },
-              totalOrders: {
-                $size: {
-                  $filter: {
-                    input: '$interactions',
-                    as: 'interaction',
-                    cond: { $eq: ['$$interaction.type', 'order'] },
-                  },
-                },
-              },
-              totalOrderValue: {
-                $sum: {
-                  $map: {
-                    input: '$interactions',
-                    as: 'interaction',
-                    in: { $ifNull: ['$$interaction.orderDetails.orderAmount', 0] },
-                  },
-                },
-              },
-            },
-          },
-          {
-            $sort: { totalOrderValue: -1 },
-          },
-        ]);
-    
-        res.status(200).json(metrics);
-      } catch (err) {
-        next(err);
-      }
-    },
     calculatePerformanceMetrics : async (req, res) => {
       try {
         const metrics = await Interaction.aggregate([
