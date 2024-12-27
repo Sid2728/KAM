@@ -68,7 +68,7 @@ Access the API at `http://localhost:5000/`.
 ---
 
 ## API Documentation
-
+### Base URL: `https://kam-5lqh.onrender.com`
 ### Authentication
 
 #### Register
